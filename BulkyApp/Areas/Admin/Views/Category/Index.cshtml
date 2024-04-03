@@ -70,7 +70,7 @@
                     callback: function (result) {
                         if (result) {
                             $.ajax({
-                                url: '/category/delete/' + btn.data('id'),
+                                url: '/admin/category/delete/' + btn.data('id'),
                                 success: function () {
                                     var categoryRow = btn.parents('.col-12');
                                     categoryRow.addClass('animate__animated animate__zoomOut');

@@ -1,4 +1,6 @@
 using Bulky.DataAccess.Data;
+using Bulky.DataAccess.Repositories;
+using Bulky.DataAccess.Repositories.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 
@@ -19,6 +21,7 @@ builder.Services.AddMvc().AddNToastNotifyToastr(new ToastrOptions()
     CloseButton = true
 });
 
+builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -38,6 +41,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
