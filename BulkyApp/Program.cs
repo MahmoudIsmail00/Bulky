@@ -1,7 +1,23 @@
+using BulkyApp.Data;
+using Microsoft.EntityFrameworkCore;
+using NToastNotify;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<ApplicationDbContext>(
+    options => options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        )
+    );
+builder.Services.AddMvc().AddNToastNotifyToastr(new ToastrOptions()
+{
+    ProgressBar = true,
+    PositionClass = ToastPositions.TopRight,
+    PreventDuplicates = true,
+    CloseButton = true
+});
 
 var app = builder.Build();
 
