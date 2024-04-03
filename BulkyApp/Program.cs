@@ -1,4 +1,4 @@
-using BulkyApp.Data;
+using Bulky.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 

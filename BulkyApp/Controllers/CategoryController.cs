@@ -1,5 +1,6 @@
-﻿using BulkyApp.Data;
-using BulkyApp.Models;
+﻿
+using Bulky.DataAccess.Data;
+using Bulky.Models;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 
