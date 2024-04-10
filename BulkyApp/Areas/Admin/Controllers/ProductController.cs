@@ -152,7 +152,11 @@ namespace BulkyApp.Areas.Admin.Controllers
 
             if (product == null)
                 return NotFound();
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            var oldImagePath = Path.Combine(wwwRootPath, product.ImageUrl.TrimStart('\\'));
 
+            if (System.IO.File.Exists(oldImagePath))
+                System.IO.File.Delete(oldImagePath);
             _unitOfWork.Product.Remove(product);
             _unitOfWork.Save();
 
@@ -161,9 +165,9 @@ namespace BulkyApp.Areas.Admin.Controllers
         #region APICALLS
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetData()
         {
-            var ProductList = _unitOfWork.Product.GetAll(includeProperties: "Category");
+            List<Product> ProductList = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
             return Json(new { data = ProductList });
         }
         #endregion

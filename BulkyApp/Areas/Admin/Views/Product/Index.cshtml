@@ -17,38 +17,17 @@
                 </a>
             </div>
         </div>
-        <table class="table table-bordered table-striped">
+        <table id="dataTable" class="table table-bordered table-striped" style="width=100%">
             <thead>
                 <tr>
                     <th>Title</th>
                     <th>ISBN</th>
                     <th>Author</th>
-                    <th>Price</th>
+                    <th>List Price</th>
                     <th>Category</th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var product in Model@* .OrderBy(u => u.Title) *@)
-                {
-                    <tr class="col-12">
-                        <td>@product.Title</td>
-                        <td>@product.ISBN</td>
-                        <td>@product.Author</td>
-                        <td>@product.ListPrice</td>
-                        <td>@product.Category.Name</td>
-                        <td>
-                            <div class="w-75 btn-group" role="group">
-                                <a asp-controller="Product" asp-action="Upsert" asp-route-id="@product.Id" class="btn btn-primary mx-2">
-                                    <i class="bi bi-pencil-square"></i>Edit
-                                </a>
-                                <a href="javascript:;" class="btn btn-danger js-delete" data-id="@product.Id">
-                                    <i class="bi bi-trash-fill"></i>Delete
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                }
             </tbody>
         </table>
     </div>
@@ -56,44 +35,65 @@
 
 @section Scripts {
     <script>
+        var dataTable;
+
         $(document).ready(function () {
-            $('.js-delete').on('click', function () {
-                var btn = $(this);
-
-                var result = bootbox.confirm({
-                    message: 'Are you sure that you want to delete this Product ?',
-                    buttons: {
-                        confirm: {
-                            label: 'Yes',
-                            className: 'btn-danger'
+            dataTable = $('#dataTable').DataTable({
+                "ajax": { url: '/admin/product/GetData' },
+                "columns": [
+                    { data: 'title', "width": "25%" },
+                    { data: 'isbn', "width": "15%" },
+                    { data: 'author', "width": "10%" },
+                    { data: 'listPrice', "width": "10%" },
+                    { data: 'category.name', "width": "15%" },
+                    {
+                        data: 'id',
+                        "render": function (data) {
+                            return `<div class="w-75 btn-group" role="group">
+                                      <a href="/admin/product/upsert?id=${data}"  class="btn btn-primary mx-2"><i class="bi bi-pencil-square"></i>Edit</a>
+                                      <a href="javascript:;" onclick="CallBootBox(${data})" class="btn btn-danger js-delete" data-id="${data}"><i class="bi bi-trash-fill"></i>Delete</a>
+                                    </div>`
                         },
-                        cancel: {
-                            label: 'No',
-                            className: 'btn-outline-secondary'
-                        }
-                    },
-                    callback: function (result) {
-                        if (result) {
-                            $.ajax({
-                                url: '/admin/product/delete/' + btn.data('id'),
-                                success: function () {
-                                    var categoryRow = btn.parents('.col-12');
-                                    categoryRow.addClass('animate__animated animate__zoomOut');
-                                    setTimeout(function () {
-                                        categoryRow.remove();
-                                    }, 1000);
-                                    toastr.success('Product deleted!');
-                                },
-                                error: function () {
-                                    toastr.error('Something went wrong!');
-                                }
-                            })
-                        }
+                        "width": "25%"
                     }
-                });
-
-
-            })
+                ]
+            });          
         });
-    </script>
+    
+        function CallBootBox(data) {
+            var btn = $(this);
+
+            var result = bootbox.confirm({
+                message: 'Are you sure that you want to delete this Product ?',
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-danger'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-outline-secondary'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: '/admin/product/delete/' + data,
+                            success: function () {
+                                // var categoryRow = btn.parents('.col-12');
+                                // categoryRow.addClass('animate__animated animate__zoomOut');
+                                setTimeout(function () {
+                                    dataTable.ajax.reload();
+                                 }, 1000);
+                                toastr.success('Product deleted!');
+                            },
+                            error: function () {
+                                toastr.error('Something went wrong!');
+                            }
+                        })
+                    }
+                }
+            });
+        }
+    </script>    
 }
